@@ -1,3 +1,27 @@
+#include <Bridge.h>
+#include <BridgeClient.h>
+#include <BridgeServer.h>
+#include <BridgeSSLClient.h>
+#include <BridgeUdp.h>
+#include <Console.h>
+#include <FileIO.h>
+#include <HttpClient.h>
+#include <Mailbox.h>
+#include <Process.h>
+#include <YunClient.h>
+#include <YunServer.h>
+
+#include <Ethernet.h>
+
+#include <Time.h>
+#include <TimeLib.h>
+
+#include <SimpleTimer.h>
+
+#include <ESP8266_Lib.h>
+
+#include <Blynk.h>
+
 /******************************************************
 
  RUN ME ON YOUR MEGA!!!
@@ -45,13 +69,13 @@ int     Pin_Number  = 255;
 int     Pin_Integer = 0;
 float   Pin_Float   = 0.0;
 
-char    ssid[32]        = "iPhoneXR"; 
-char    pass[32]        = "bullybully";
+char    ssid[32]        = "utguest"; //iPhoneXR
+char    pass[32]        = ""; //bullybully
 
 //char    ssid[32]        = "EE-IOT-Platform-02"; 
 //char    pass[32]        = "dUQQE?&W44x7";
 
-char    auth[256]  = "3249371193124d6ba26f0abe3f65ed2de";   // For FYDE projects only
+char    auth[256]  = "8a5566fffca44deb899aaccda9252d2f";   // For FYDE projects only
 
 
 // **********************************
@@ -211,13 +235,13 @@ void setup() {
   // ----------------------------------------------------------------------------
   // Start debug serial port at 9600 bps and wait for port to open:
   //
-  Serial.begin(9600);
+  Serial1.begin(9600);
   while (!Serial) {  }            // wait for serial port to connect. Needed for native USB port only
   
   // ----------------------------------------------------------------------------
   // Start debug serial port at 9600 bps and wait for port to open:
   //
-  Serial1.begin(9600);
+  Serial.begin(9600);
   while (!Serial1) {  }           // wait for serial port to connect. Needed for native USB port only
   digitalWrite(ESP_RST, HIGH);    // Negate reset to ESP8266 
   
