@@ -12,7 +12,7 @@
  - Connect RX1 on the mega to TX on the programmer
  - Connect TX1 on the mega to RX on the programmer
  - Connect GND to GND
- 
+
  2) Go to Tools -> Board and select Arduino/Genuino Mega or Mega 2560
 
  3) Sign up for Blynk (https://www.blynk.cc/) and install the app on your phone.
@@ -20,18 +20,18 @@
  Then, go to Sketch -> Include Library -> Manage Libraries and search 'Blynk' and
  install the library
 
- 4) Change the network name, password, and blynk token in the code to reflect your own 
- 
+ 4) Change the network name, password, and blynk token in the code to reflect your own
+
  5) Finish writing the serial recieve in the 'void loop()'
  It needs to:
- - Continuously look for serial input on Serial 1 
+ - Continuously look for serial input on Serial 1
  - Take any character recieved on Serial 1 and print
- the data out through the main Serial 
+ the data out through the main Serial
 
  6) Open a serial monitor by going to
  Tools -> Serial Monitor and set to 9600 baud once open to see output
  and run!
- 
+
  *****************************/
 #include <SimpleTimer.h>
 
@@ -45,88 +45,96 @@ int     Pin_Number  = 255;
 int     Pin_Integer = 0;
 float   Pin_Float   = 0.0;
 
-char    ssid[32]        = "iPhoneXR"; 
-char    pass[32]        = "bullybully";
+//char    ssid[32]        = "iPhoneXR";
+//char    pass[32]        = "bullybully";
+char    ssid[32]        = "EE-IOT-Platform-02";
+char    pass[32]        = "dUQQE?&W44x7";
 
-//char    ssid[32]        = "EE-IOT-Platform-02"; 
-//char    pass[32]        = "dUQQE?&W44x7";
-
-char    auth[256]  = "3249371193124d6ba26f0abe3f65ed2de";   // For FYDE projects only
+char    auth[256]  = "0ef47a7eee99415c88c8c2f2f2e374b9";   // For FYDE projects only
 
 
 // **********************************
-void DebugPrint(void) {
+void DebugPrint(void)
+{
 
-  Serial.print(Pin_Number);
-  Serial.print(",");
-  Serial.print(Pin_Integer);
-  Serial.print(",");
-  Serial.println(Pin_Float); 
+    // Serial.print(Pin_Number);
+    // Serial.print(",");
+    // Serial.print(Pin_Integer);
+    // Serial.print(",");
+    // Serial.println(Pin_Float);
 }
 
 // =====================================================================
 // This routine sets up the Wifi connection
 // =====================================================================
 
-void Wifi_Setup(void) {
-  Serial.println("In WiFI_Setup routine");
-  
-  char inchar = '0';      // Assign NULL value
+void Wifi_Setup(void)
+{
+    // Serial.println("In WiFI_Setup routine");
 
-  while ((digitalRead(RDY) != 1)) 
+    char inchar = '0';      // Assign NULL value
 
-  {       // Wait for ESP8266 indicate it is ready for programming data
-      Serial.println("Waiting for data from ESP");
-      delay(2000);
-  }
-  
-  digitalWrite(ACK, HIGH);    // Acknowledge that RDY went HIGH
+    while ((digitalRead(RDY) != 1))
 
-  Serial1.print(auth);        // This data is shipped in CSV format
-  Serial1.print(",");
-  Serial1.print(ssid);
-  Serial1.print(",");
-  Serial1.print(pass);
-  Serial1.print(",");         // NOTE: Dangling comma is needed for the 8266 code
-  Serial1.print("\n");
-   
-  while ((digitalRead(RDY) != 0))  {
-    
-    if ((Serial1.available() > 0)) {
-  
-        inchar = Serial1.read();  // assigns one byte as serial.read()'s only input one byte at a time
-        Serial.print(inchar);
+    {
+        // Wait for ESP8266 indicate it is ready for programming data
+        // Serial.println("Waiting for data from ESP");
+        delay(2000);
     }
-    else if (Serial1.available() == 0) {
-      
+
+    digitalWrite(ACK, HIGH);    // Acknowledge that RDY went HIGH
+
+    Serial.print(auth);        // This data is shipped in CSV format
+    Serial.print(",");
+    Serial.print(ssid);
+    Serial.print(",");
+    Serial.print(pass);
+    Serial.print(",");         // NOTE: Dangling comma is needed for the 8266 code
+    Serial.print("\n");
+
+    while ((digitalRead(RDY) != 0))
+    {
+
+        if ((Serial.available() > 0))
+        {
+
+            inchar = Serial.read();  // assigns one byte as serial.read()'s only input one byte at a time
+            // Serial.print(inchar);
+        }
+        else if (Serial.available() == 0)
+        {
+
+        }
     }
-  }
-  digitalWrite(ACK, LOW);     // Acknowledge that RDY went LOW
-  
-  Serial.println("Exiting WiFI_Setup routine");
+    digitalWrite(ACK, LOW);     // Acknowledge that RDY went LOW
+
+    // Serial.println("Exiting WiFI_Setup routine");
 
 }
-  
+
 // =====================================================================
 // This routine reads the serial input from the ESP8266 to the MEGA
 // =====================================================================
- 
-void ESP8266_to_Mega(void) {
 
-  while (Serial1.available() > 0) {
-    //Serial.println("In serial input");
-    // look for the next valid integer in the incoming serial stream:
+void ESP8266_to_Mega(void)
+{
 
-    Pin_Number  = Serial1.parseInt();
-    Pin_Integer = Serial1.parseInt();
-    Pin_Float   = Serial1.parseFloat();
-     
-    // Look for the newline.
-    if (Serial1.read() == '\n') {
-      //DebugPrint();
+    while (Serial.available() > 0)
+    {
+        Serial.println("In serial input");
+        // look for the next valid integer in the incoming serial stream:
+
+        Pin_Number  = Serial.parseInt();
+        Pin_Integer = Serial.parseInt();
+        Pin_Float   = Serial.parseFloat();
+
+        // Look for the newline.
+        if (Serial.read() == '\n')
+        {
+            //DebugPrint();
+        }
+        Parser();     // Go to parsing routine
     }
-  Parser();     // Go to parsing routine
-  }
 
 }
 
@@ -136,110 +144,119 @@ int     led_val         = 4;
 int     brightness      = 255;
 int     sensorPin       = A0;    // select the input pin for the potentiometer
 float   sensorValueOld  = 0.0;  // variable to store the value coming from the sensor
-float   sensorValueNew  = 0.0; 
+float   sensorValueNew  = 0.0;
 
 // ===================   PARSER   ==================================================
 
-void Parser(void) {
-  //Serial.println("In the parser");
-  
-  if((Pin_Number == 1) && (Pin_Integer == 1))  {
-    
-    DebugPrint();
-    digitalWrite(led, HIGH);
-        
-  }
-  
-  if((Pin_Number == 1) && (Pin_Integer == 0))  {
-    DebugPrint();
-    digitalWrite(led, LOW);
-  }
+void Parser(void)
+{
+    Serial.println("In the parser");
 
-  if (Pin_Number == 5) { 
-    sensorValueOld = Pin_Float; 
-    
-    DebugPrint();    
-  }
- 
+    if ((Pin_Number == 1) && (Pin_Integer == 1))
+    {
+
+        DebugPrint();
+        digitalWrite(led, HIGH);
+
+    }
+
+    if ((Pin_Number == 1) && (Pin_Integer == 0))
+    {
+        DebugPrint();
+        digitalWrite(led, LOW);
+    }
+
+    if (Pin_Number == 5)
+    {
+        sensorValueOld = Pin_Float;
+
+        DebugPrint();
+    }
+
 }
 
 // **********************************
-void ReadSensors(void) {
-  
-  sensorValueNew = analogRead(sensorPin);
-  
-  if (abs(sensorValueNew - (sensorValueOld)) > 0) {
-    Serial1.print(51);
-    Serial1.print(",");
-    Serial1.print(0);
-    Serial1.print(",");
-    Serial1.print((sensorValueNew/1023)*5);
-    Serial1.print("\n");
-    
-    Serial.print(51);
-    Serial.print(",");
-    Serial.print(0);
-    Serial.print(",");
-    Serial.print((sensorValueNew/1023)*5);
-    Serial.print("\n");
-    sensorValueOld = sensorValueNew;
-  
-    //Serial.print("Analog pin value = ");
-    //Serial.print((sensorValueNew/1023)*5);
-    //Serial.print("V \n");
-  }
+void ReadSensors(void)
+{
+
+    sensorValueNew = analogRead(sensorPin);
+
+    if (abs(sensorValueNew - (sensorValueOld)) > 0)
+    {
+        Serial.print(51);
+        Serial.print(",");
+        Serial.print(0);
+        Serial.print(",");
+        Serial.print((sensorValueNew / 1023) * 5);
+        Serial.print("\n");
+
+        // Serial.print(51);
+        // Serial.print(",");
+        // Serial.print(0);
+        // Serial.print(",");
+        // Serial.print((sensorValueNew / 1023) * 5);
+        // Serial.print("\n");
+        sensorValueOld = sensorValueNew;
+
+        Serial.print("Analog pin value = ");
+        Serial.print((sensorValueNew / 1023) * 5);
+        Serial.print("V \n");
+    }
 }
 
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
-// 
+//
 // THIS IS THE MAIN SETUP CODE. IT IS ONLY RUN ONCE
 //
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-void setup() {
-  pinMode(led, OUTPUT);
-  pinMode(RDY, INPUT_PULLUP);     // RDY Signal from 8266 (default is HIGH)
-  pinMode(ACK, OUTPUT);           // ACK Signal to 8266
-  pinMode(ESP_RST, OUTPUT);
-  digitalWrite(ACK, LOW);         // Negate RDY signal to 8266
-  
-  digitalWrite(ESP_RST, LOW);     // Assert reset to ESP8266
+void setup()
+{
+    pinMode(led, OUTPUT);
+    pinMode(RDY, INPUT_PULLUP);     // RDY Signal from 8266 (default is HIGH)
+    pinMode(ACK, OUTPUT);           // ACK Signal to 8266
+    pinMode(ESP_RST, OUTPUT);
+    digitalWrite(ACK, LOW);         // Negate RDY signal to 8266
 
-  // ----------------------------------------------------------------------------
-  // Start debug serial port at 9600 bps and wait for port to open:
-  //
-  Serial.begin(9600);
-  while (!Serial) {  }            // wait for serial port to connect. Needed for native USB port only
-  
-  // ----------------------------------------------------------------------------
-  // Start debug serial port at 9600 bps and wait for port to open:
-  //
-  Serial1.begin(9600);
-  while (!Serial1) {  }           // wait for serial port to connect. Needed for native USB port only
-  digitalWrite(ESP_RST, HIGH);    // Negate reset to ESP8266 
-  
-  delay(1000);                    // Wait for ESP8266 to come out of reset
-  
-  Wifi_Setup();                   // Send the WiFi login data to the ESP8266
-  
-  digitalWrite(led, HIGH);        // Indicate we are alive and well
+    digitalWrite(ESP_RST, LOW);     // Assert reset to ESP8266
+
+    // ----------------------------------------------------------------------------
+    // Start debug serial port at 9600 bps and wait for port to open:
+    //
+    Serial.begin(9600);
+    while (!Serial) {  }            // wait for serial port to connect. Needed for native USB port only
+
+    // ----------------------------------------------------------------------------
+    // Start debug serial port at 9600 bps and wait for port to open:
+    //
+    Serial.begin(9600);
+    while (!Serial) {  }           // wait for serial port to connect. Needed for native USB port only
+    digitalWrite(ESP_RST, HIGH);    // Negate reset to ESP8266
+
+    delay(1000);                    // Wait for ESP8266 to come out of reset
+
+    //Wifi_Setup();                   // Send the WiFi login data to the ESP8266
+
+    digitalWrite(led, HIGH);        // Indicate we are alive and well
 }
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
-// 
+//
 // THIS IS THE MAIN LOOP. IT RUNS CONTINOUSLY
 //
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-void loop() {
-  
-  ESP8266_to_Mega();
-  delay(400);
-  ReadSensors();
-  delay(300);  
+void loop()
+{
+
+    ESP8266_to_Mega();
+    delay(400);
+    ReadSensors();
+    Serial.println("Hello world");
+    delay(300);
 }
